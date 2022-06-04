@@ -10,4 +10,6 @@ fn main() {
     .expect(&format!("Could not read file '{}'", filename));
 
     println!("Contents read: \n'{}'", &contents);
+
+    
 }
