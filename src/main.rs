@@ -11,5 +11,5 @@ fn main() {
 
     println!("Contents read: \n'{}'", &contents);
 
-    
+    sudoku_solver::run(&contents);
 }

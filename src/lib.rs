@@ -4,7 +4,7 @@ enum Cell {
     Empty(Vec<bool>), //Which values are possible
 }
 
-fn run(contents: &str) -> String {
+pub fn run(contents: &str) -> String {
     let parsed = parse_contents(contents);
     
     solve(parsed)
