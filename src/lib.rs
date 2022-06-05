@@ -1,6 +1,3 @@
-use std::iter::Map;
-
-
 #[derive(Debug, PartialEq)]
 enum Cell {
     Num(u32),
@@ -16,6 +13,10 @@ fn run(contents: &str) -> String {
 fn parse_contents(contents: &str) -> Vec<Vec<Cell>> {
     const RADIX: u32 = 10;
 
+    // //Find largest number. JUST ASSUME 9
+    //println!("{}", contents.chars().map(|x| x.to_digit(RADIX)).filter_map(|x| x).max().unwrap());
+
+    //Construct Vec<Vec<Cell>>
     let mut vec: Vec<Vec<Cell>> = vec![];
 
     for line in contents.lines() {
@@ -24,7 +25,7 @@ fn parse_contents(contents: &str) -> Vec<Vec<Cell>> {
 
             match x.to_digit(RADIX) {
                 Some(num) => Cell::Num(num),
-                None => Cell::Empty(vec![]),
+                None => Cell::Empty(vec![false; 9]),
             }
 
         }).collect())
@@ -59,8 +60,6 @@ fn solve(sudoku: Vec<Vec<Cell>>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::result;
-
     use super::*;
 
     #[test]
@@ -100,8 +99,8 @@ __75__6_3
 43___6__5";
 
         let expected_result = vec![
-            vec![Empty(vec![]),Empty(vec![]),Num(7),Num(5),Empty(vec![]),Empty(vec![]),Num(6),Empty(vec![]),Num(3)],
-            vec![Num(4),Num(3),Empty(vec![]),Empty(vec![]),Empty(vec![]),Num(6),Empty(vec![]),Empty(vec![]),Num(5)],
+            vec![Empty(vec![false; 9]),Empty(vec![false; 9]),Num(7),Num(5),Empty(vec![false; 9]),Empty(vec![false; 9]),Num(6),Empty(vec![false; 9]),Num(3)],
+            vec![Num(4),Num(3),Empty(vec![false; 9]),Empty(vec![false; 9]),Empty(vec![false; 9]),Num(6),Empty(vec![false; 9]),Empty(vec![false; 9]),Num(5)],
         ];
 
         let result = parse_contents(contents);
