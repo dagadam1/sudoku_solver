@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq)]
+use std::borrow::BorrowMut;
+
+#[derive(Debug, PartialEq, Clone)]
 enum Cell {
     Num(u32),
     Empty(Vec<bool>), //Which values are possible
@@ -25,7 +27,7 @@ fn parse_contents(contents: &str) -> Vec<Vec<Cell>> {
 
             match x.to_digit(RADIX) {
                 Some(num) => Cell::Num(num),
-                None => Cell::Empty(vec![false; 9]),
+                None => Cell::Empty(vec![true; 9]),
             }
 
         }).collect())
@@ -54,6 +56,29 @@ fn parse_contents(contents: &str) -> Vec<Vec<Cell>> {
 }
 
 fn solve(sudoku: Vec<Vec<Cell>>) -> String {
+    for line in sudoku {
+        let line_clone = line.to_vec();
+
+        for cell in line.into_iter() {
+            if let Cell::Empty(mut vec) = cell {
+
+                line_clone
+                .iter()
+                .filter(|x| match x
+                    { 
+                        Cell::Empty(_) => false,
+                        Cell::Num(_) => true,
+                    })
+                .for_each(|x| 
+                    { 
+                        if let Cell::Num(num) = x {
+                            vec[*num as usize] = false;
+                        }
+                    });
+            }
+        }
+    }
+
     todo!();
 }
 
@@ -99,12 +124,24 @@ __75__6_3
 43___6__5";
 
         let expected_result = vec![
-            vec![Empty(vec![false; 9]),Empty(vec![false; 9]),Num(7),Num(5),Empty(vec![false; 9]),Empty(vec![false; 9]),Num(6),Empty(vec![false; 9]),Num(3)],
-            vec![Num(4),Num(3),Empty(vec![false; 9]),Empty(vec![false; 9]),Empty(vec![false; 9]),Num(6),Empty(vec![false; 9]),Empty(vec![false; 9]),Num(5)],
+            vec![Empty(vec![true; 9]),Empty(vec![true; 9]),Num(7),Num(5),Empty(vec![true; 9]),Empty(vec![true; 9]),Num(6),Empty(vec![true; 9]),Num(3)],
+            vec![Num(4),Num(3),Empty(vec![true; 9]),Empty(vec![true; 9]),Empty(vec![true; 9]),Num(6),Empty(vec![true; 9]),Empty(vec![true; 9]),Num(5)],
         ];
 
         let result = parse_contents(contents);
 
         assert_eq!(result, expected_result);
+    }
+
+    #[test]
+    fn quick_test() {
+
+        let hej = 5;
+
+        println!("{}", match hej {_ => true});
+
+        let hej = vec![true; 2];
+
+        println!("{:?}", hej);
     }
 }
