@@ -1,40 +1,41 @@
-use std::borrow::BorrowMut;
+use std::convert::TryInto;
 
-#[derive(Debug, PartialEq, Clone)]
-enum Cell {
+#[derive(Debug, PartialEq, Clone, Copy)]
+enum Entry {
     Num(u32),
-    Empty(Vec<bool>), //Which values are possible
+    Empty([bool; 9]), //Which values are possible
 }
 
-pub fn run(contents: &str) -> String {
-    let parsed = parse_contents(contents);
+type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and every entry is a number in the sudoku
+
+pub fn run(contents: &str) -> Result<String, String> {
+    let parsed = parse_contents(contents)?;
     
-    solve(parsed)
+    Ok(solve(parsed))
 }
 
-fn parse_contents(contents: &str) -> Vec<Vec<Cell>> {
+fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
     const RADIX: u32 = 10;
 
-    // //Find largest number. JUST ASSUME 9
-    //println!("{}", contents.chars().map(|x| x.to_digit(RADIX)).filter_map(|x| x).max().unwrap());
+    let mut vec: Vec<Line> = vec![];
 
-    //Construct Vec<Vec<Cell>>
-    let mut vec: Vec<Vec<Cell>> = vec![];
-
+    //Fill Vec<Line>
     for line in contents.lines() {
-
-        vec.push(line.chars().map(|x| {
-
-            match x.to_digit(RADIX) {
-                Some(num) => Cell::Num(num),
-                None => Cell::Empty(vec![true; 9]),
-            }
-
-        }).collect())
-
+        if line.len() != 9 {
+            return Err(format!("Expected a line length of 9 but got a length of '{} instead!", line.len()));
+        }
+        let mut line_array: Line = [Entry::Num(0); 9];
+        for (i, character) in line.chars().enumerate() {
+            line_array[i] = match character.to_digit(RADIX) {
+                Some(num) => Entry::Num(num),
+                None => Entry::Empty([true; 9]),
+            };
+        };
+        vec.push(line_array);
     };
-
-    vec
+    
+    let array: [Line; 9] = vec.try_into().map_err(|_| format!("Expected 9 lines!"))?;
+    Ok(array)
     
 
     // //This whole section is pretty unreadable but could be remade later (maybe with loops) if it causes problems
@@ -44,39 +45,46 @@ fn parse_contents(contents: &str) -> Vec<Vec<Cell>> {
 
 
 
-    // let outer_vec: Vec<Vec<Cell>> = primary.map(|number: Option<u32>|
+    // let outer_vec: Vec<Vec<Entry>> = primary.map(|number: Option<u32>|
     // { 
     //     match number {
-    //         Some(num) => Cell::Num(num),
-    //         None => Cell::Empty(vec![true; ]),
+    //         Some(num) => Entry::Num(num),
+    //         None => Entry::Empty(vec![true; ]),
     //     } 
     // }).collect();
 
     // outer_vec
 }
 
-fn solve(sudoku: Vec<Vec<Cell>>) -> String {
+fn solve(sudoku: [Line; 9]) -> String {
     for line in sudoku {
         let line_clone = line.to_vec();
 
-        for cell in line.into_iter() {
-            if let Cell::Empty(mut vec) = cell {
+        for cell in line.iter() {
+            if let Entry::Empty(mut vec) = cell {
 
                 line_clone
                 .iter()
                 .filter(|x| match x
                     { 
-                        Cell::Empty(_) => false,
-                        Cell::Num(_) => true,
+                        Entry::Empty(_) => false,
+                        Entry::Num(_) => true,
                     })
                 .for_each(|x| 
                     { 
-                        if let Cell::Num(num) = x {
+                        if let Entry::Num(num) = x {
                             vec[*num as usize] = false;
                         }
                     });
             }
         }
+
+        // for i in 0..9 {
+        //     for j in 0..9 {
+        //         sudoku[i]
+        //     }
+            
+        // }
     }
 
     todo!();
@@ -111,24 +119,30 @@ _74_2_59_
 374621598
 129385764";
 
-        let result = run(contents);
+        let result = run(contents).unwrap();
 
         assert_eq!(result, expected_result);
     }
 
     #[test]
     fn test_parsing() {
-        use Cell::*;
+        use Entry::*;
         let contents = "\
 __75__6_3
-43___6__5";
+__75__6_3
+__75__6_3
+__75__6_3
+__75__6_3
+__75__6_3
+__75__6_3
+__75__6_3
+__75__6_3";
 
-        let expected_result = vec![
-            vec![Empty(vec![true; 9]),Empty(vec![true; 9]),Num(7),Num(5),Empty(vec![true; 9]),Empty(vec![true; 9]),Num(6),Empty(vec![true; 9]),Num(3)],
-            vec![Num(4),Num(3),Empty(vec![true; 9]),Empty(vec![true; 9]),Empty(vec![true; 9]),Num(6),Empty(vec![true; 9]),Empty(vec![true; 9]),Num(5)],
+        let expected_result = [
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9
         ];
 
-        let result = parse_contents(contents);
+        let result = parse_contents(contents).unwrap();
 
         assert_eq!(result, expected_result);
     }
