@@ -60,8 +60,8 @@ fn solve(sudoku: [Line; 9]) -> String {
     for line in sudoku {
         let line_clone = line.to_vec();
 
-        for cell in line.iter() {
-            if let Entry::Empty(mut vec) = cell {
+        for (entry_nr, entry) in line.iter().enumerate() {
+            if let Entry::Empty(mut vec) = entry {
 
                 line_clone
                 .iter()
@@ -73,18 +73,17 @@ fn solve(sudoku: [Line; 9]) -> String {
                 .for_each(|x| 
                     { 
                         if let Entry::Num(num) = x {
-                            vec[*num as usize] = false;
+                            vec[*num as usize - 1] = false;
                         }
                     });
+
+                for i in 0..9 {
+                    if let Entry::Num(num) = sudoku[i][entry_nr] {
+                        vec[num as usize - 1] = false;
+                    }
+                }
             }
         }
-
-        // for i in 0..9 {
-        //     for j in 0..9 {
-        //         sudoku[i]
-        //     }
-            
-        // }
     }
 
     todo!();
@@ -157,5 +156,9 @@ __75__6_3";
         let hej = vec![true; 2];
 
         println!("{:?}", hej);
+
+        for i in 0..9 {
+            println!("{}", i);
+        }
     }
 }
