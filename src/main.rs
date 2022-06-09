@@ -9,12 +9,10 @@ fn main() {
     let filename = &args[1];
 
     let contents = fs::read_to_string(filename).unwrap_or_else(|err| {
-        eprintln!("Error reading file '{}': '{}'", filename, err);
+        eprintln!("Error reading file '{}': {}", filename, err);
 
         process::exit(1);
     });
-
-    println!("Contents read: \n'{}'", &contents);
 
     if let Err(e) = sudoku_solver::run(&contents) {
         eprintln!("Application error: {}", e);

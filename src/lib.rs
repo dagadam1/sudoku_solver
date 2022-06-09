@@ -22,7 +22,7 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
     //Fill Vec<Line>
     for line in contents.lines() {
         if line.len() != 9 {
-            return Err(format!("Expected a line length of 9 but got a length of '{} instead!", line.len()));
+            return Err(format!("Expected a 9x9 sudoku but got a line length of '{}' instead!", line.len()));
         }
         let mut line_array: Line = [Entry::Num(0); 9];
         for (i, character) in line.chars().enumerate() {
@@ -34,7 +34,7 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
         vec.push(line_array);
     };
     
-    let array: [Line; 9] = vec.try_into().map_err(|_| format!("Expected 9 lines!"))?;
+    let array: [Line; 9] = vec.try_into().map_err(|_| "Expected 9 lines!")?;
     Ok(array)
     
 
