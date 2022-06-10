@@ -89,6 +89,29 @@ fn solve(sudoku: [Line; 9]) -> String {
     todo!();
 }
 
+fn analyze(position: (usize, usize), sudoku: [Line; 9]) -> [Line; 9] {
+    let (ln, col) = position;
+    
+    if let Entry::Empty(mut inner_array) = sudoku[ln][col] {
+        sudoku[ln]
+            .iter()
+            .for_each(|x|
+        {
+            if let Entry::Num(num) = x {
+                println!("{}", &num);
+                inner_array[*num as usize - 1] = false;
+            } 
+        });
+        
+        for i in 0..9 {
+            if let Entry::Num(num) = sudoku[i][col] {
+                inner_array[num as usize - 1] = false;
+            }
+        }
+    }
+    sudoku
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -146,6 +169,29 @@ __75__6_3";
         assert_eq!(result, expected_result);
     }
 
+    #[test]
+    fn test_analysis() {
+        use Entry::*;
+        let sudoku = [[Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9];
+//__75__6_3
+//__75__6_3
+//__75__6_3
+//__75__6_3
+//__75__6_3
+//__75__6_3
+//__75__6_3
+//__75__6_3
+//__75__6_3
+
+        let result = analyze((0,0), sudoku);
+
+        println!("{:?}", result);
+        println!("{:?}", sudoku);
+        println!("{:?}", result == sudoku);
+
+        assert_eq!(result[0][0], Empty([true, true, false, true, false, false, false, true, true]));
+    }
+    
     #[test]
     fn quick_test() {
 
