@@ -9,9 +9,9 @@ enum Entry {
 type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and every entry is a number in the sudoku
 
 pub fn run(contents: &str) -> Result<String, String> {
-    let parsed = parse_contents(contents)?;
+    let mut parsed = parse_contents(contents)?;
     
-    Ok(solve(parsed))
+    Ok(solve(&mut parsed))
 }
 
 fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
@@ -56,56 +56,32 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
     // outer_vec
 }
 
-fn solve(sudoku: [Line; 9]) -> String {
-    for line in sudoku {
-        let line_clone = line.to_vec();
-
-        for (entry_nr, entry) in line.iter().enumerate() {
-            if let Entry::Empty(mut vec) = entry {
-
-                line_clone
-                .iter()
-                .filter(|x| match x
-                    { 
-                        Entry::Empty(_) => false,
-                        Entry::Num(_) => true,
-                    })
-                .for_each(|x| 
-                    { 
-                        if let Entry::Num(num) = x {
-                            vec[*num as usize - 1] = false;
-                        }
-                    });
-
-                for i in 0..9 {
-                    if let Entry::Num(num) = sudoku[i][entry_nr] {
-                        vec[num as usize - 1] = false;
-                    }
-                }
-            }
+fn solve(sudoku: &mut [Line; 9]) -> String {
+    for line_nr in 0..9 {
+        for col_nr in 0..9 {
+            analyze(line_nr, col_nr, sudoku);
         }
+
     }
 
     todo!();
 }
 
-fn analyze(position: (usize, usize), sudoku: &mut [Line; 9]) {
-    let (ln, col) = position;
+fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
     let sudoku_clone = sudoku.clone();
     
-    if let Entry::Empty(ref mut inner_array) = sudoku[ln][col] {
+    if let Entry::Empty(ref mut inner_array) = sudoku[line_nr][col_nr] {
 
         //Check line
         for i in 0..9 {
-            if let Entry::Num(num) = sudoku_clone[ln][i] {
-                println!("{}", &num);
+            if let Entry::Num(num) = sudoku_clone[line_nr][i] {
                 inner_array[num as usize - 1] = false;
             }
         }
 
         //Check column
         for i in 0..9 {
-            if let Entry::Num(num) = sudoku_clone[i][col] {
+            if let Entry::Num(num) = sudoku_clone[i][col_nr] {
                 inner_array[num as usize - 1] = false;
             }
         }
@@ -184,7 +160,7 @@ __75__6_3";
 //__75__6_3
 //__75__6_3
 
-        analyze((0,0), &mut sudoku);
+        analyze(0, 0, &mut sudoku);
 
         println!("{:?}", sudoku);
 
