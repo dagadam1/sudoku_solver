@@ -36,24 +36,6 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
     
     let array: [Line; 9] = vec.try_into().map_err(|_| "Expected 9 lines!")?;
     Ok(array)
-    
-
-    // //This whole section is pretty unreadable but could be remade later (maybe with loops) if it causes problems
-    // //Find largest number
-    // let primary: Map<Vec<Option<u32>>> = lines.map(|line| 
-    //     { line.chars().map(|character| character.to_digit(RADIX)).collect() });
-
-
-
-    // let outer_vec: Vec<Vec<Entry>> = primary.map(|number: Option<u32>|
-    // { 
-    //     match number {
-    //         Some(num) => Entry::Num(num),
-    //         None => Entry::Empty(vec![true; ]),
-    //     } 
-    // }).collect();
-
-    // outer_vec
 }
 
 fn solve(sudoku: &mut [Line; 9]) -> String {
