@@ -45,18 +45,8 @@ fn solve(sudoku: &mut [Line; 9]) -> String {
         }
     }
 
-    for line in sudoku.as_mut() {
-        line.clone().iter().enumerate().for_each(|(line_pos, entry)| {
-            if let Entry::Empty(array) = entry {
-
-                if array.iter().filter(|x| **x).count() == 1 {
-                    let num = array.iter().position(|x| *x).unwrap();
-                    line[line_pos] = Entry::Num(num as u32 + 1);
-                }
-            }
-        })
-    }
-
+    update_sudoku(sudoku);
+    
     println!("{:?}", sudoku);
     todo!();
 }
@@ -80,6 +70,30 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
             }
         }
     }
+}
+
+fn update_sudoku(sudoku: &mut [Line; 9]) {
+    for line in sudoku {
+        
+        line
+            .clone()
+            .iter()
+            .enumerate()
+            .for_each( |(line_pos, entry)| {
+
+            if let Entry::Empty(array) = entry {
+
+                if array.iter().filter(|x| **x).count() == 1 {
+
+                    let num = array.iter().position(|x| *x).unwrap();
+                    line[line_pos] = Entry::Num(num as u32 + 1);
+                    
+                }
+            }
+            
+        })
+    }
+
 }
 
 
