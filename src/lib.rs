@@ -43,9 +43,21 @@ fn solve(sudoku: &mut [Line; 9]) -> String {
         for col_nr in 0..9 {
             analyze(line_nr, col_nr, sudoku);
         }
-
     }
 
+    for line in sudoku.as_mut() {
+        line.clone().iter().enumerate().for_each(|(line_pos, entry)| {
+            if let Entry::Empty(array) = entry {
+
+                if array.iter().filter(|x| **x).count() == 1 {
+                    let num = array.iter().position(|x| *x).unwrap();
+                    line[line_pos] = Entry::Num(num as u32 + 1);
+                }
+            }
+        })
+    }
+
+    println!("{:?}", sudoku);
     todo!();
 }
 
