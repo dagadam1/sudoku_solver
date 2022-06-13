@@ -1,4 +1,4 @@
-use std::{convert::TryInto, sync::Arc};
+use std::convert::TryInto;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Entry {
@@ -13,9 +13,7 @@ pub fn run(contents: &str) -> Result<String, String> {
     
     solve(&mut parsed)?;
 
-    unparse_contents(parsed);
-
-    todo!();
+    Ok(unparse_sudoku(parsed))
 }
 
 fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
@@ -46,8 +44,7 @@ fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
     let mut iterations = 0;
     while sudoku.iter()
                 .flatten()
-                .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) 
-            && iterations <= 20 {
+                .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) {
         
         for line_nr in 0..9 {
             for col_nr in 0..9 {
@@ -57,11 +54,14 @@ fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
 
         update_sudoku(sudoku);
 
+        if iterations >= 20 {
+            return Err(String::from("Could not find solution!"));
+        }
+
         iterations += 1;
     }
 
-    println!("{:?}", sudoku);
-    todo!();
+    Ok(())
 }
 
 fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
@@ -106,8 +106,6 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
 
     let cell_row = line_nr / 3;
     let cell_col = col_nr / 3;
-        
-//INTE ÄN
 
     for row in 0..3 {
             for col in 0..3 {
@@ -149,8 +147,21 @@ fn update_sudoku(sudoku: &mut [Line; 9]) {
 
 }
 
-fn unparse_contents(sudoku: [Line; 9]) -> String {
-    todo!();
+fn unparse_sudoku(sudoku: [Line; 9]) -> String {
+    let mut output = String::from("");
+
+    for line in sudoku {
+        for entry in line {
+            if let Entry::Num(num) = entry { //entry must be the variant Entry::Num(_)
+                output.push_str(&num.to_string())
+            }
+        }
+        output.push('\n');
+    }
+
+    output.pop(); //Remove the last '\n'
+    
+    output
 }
 
 #[cfg(test)]
@@ -231,6 +242,7 @@ __75__6_3";
 //__75__523
 //__75__8_9
         analyze(0, 0, &mut sudoku);
+        analyze(8, 7, &mut sudoku);
 
         assert_eq!(sudoku[0][0], Empty([true, true, false, true, false, false, false, true, false]));
         assert_eq!(sudoku[8][7], Empty([false, false, false, true, false, false, false, false, false]));
