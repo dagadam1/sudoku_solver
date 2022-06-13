@@ -69,9 +69,53 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
                 inner_array[num as usize - 1] = false;
             }
         }
+        
+    }
+
+    //One cell is one of the 9 3x3 grids in the sudoku
+    let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
+
+    for i in 0..3 {
+        cells[0].extend_from_slice(&sudoku[i][0..3]);
+        cells[1].extend_from_slice(&sudoku[i][3..6]);
+        cells[2].extend_from_slice(&sudoku[i][6..9]);
+    }
+
+    for i in 3..6 {
+        cells[3].extend_from_slice(&sudoku[i][0..3]);
+        cells[4].extend_from_slice(&sudoku[i][3..6]);
+        cells[5].extend_from_slice(&sudoku[i][6..9]);
+    }
+    
+    for i in 6..9 {
+        cells[6].extend_from_slice(&sudoku[i][0..3]);
+        cells[7].extend_from_slice(&sudoku[i][3..6]);
+        cells[8].extend_from_slice(&sudoku[i][6..9]);
+    }
+
+    for cell_row in 0..3 {
+        for cell_col in 0..3 {
+            
+            for row in 0..3 {
+                for col in 0..3 {
+
+                    if let Entry::Empty(ref mut inner_array) = sudoku[row + cell_row * 3][col + cell_col * 3] {
+
+                        cells[cell_row + 3 * cell_col].iter().for_each(|cell| {
+                            if let Entry::Num(num) = cell {
+                                inner_array[*num as usize - 1] = false;
+                            }
+                        });
+
+                    }
+                    
+                }
+            }
+
+        }
     }
 }
-
+ 
 fn update_sudoku(sudoku: &mut [Line; 9]) {
     for line in sudoku {
         
@@ -158,21 +202,26 @@ __75__6_3";
         use Entry::*;
         let mut sudoku = [[Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9];
         sudoku[2][0] = Num(9); 
+        sudoku[8][8] = Num(9);
+        sudoku[8][6] = Num(8);
+        sudoku[7][7] = Num(2);
+        sudoku[7][6] = Num(5);
+        sudoku[6][6] = Num(7);
+        sudoku[6][7] = Num(1);
+        sudoku[6][8] = Num(6);
 //__75__6_3
 //__75__6_3
 //9_75__6_3
 //__75__6_3
 //__75__6_3
 //__75__6_3
-//__75__6_3
-//__75__6_3
-//__75__6_3
-
+//__75__716
+//__75__523
+//__75__8_9
         analyze(0, 0, &mut sudoku);
 
-        println!("{:?}", sudoku);
-
         assert_eq!(sudoku[0][0], Empty([true, true, false, true, false, false, false, true, false]));
+        assert_eq!(sudoku[8][7], Empty([false, false, false, true, false, false, false, false, false]));
     }
     
     #[test]
