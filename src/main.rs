@@ -14,9 +14,12 @@ fn main() {
         process::exit(1);
     });
 
-    if let Err(err) = sudoku_solver::run(&contents) {
-        eprintln!("Application error: {}", err);
+    match sudoku_solver::run(&contents) {
+        Ok(result) => println!("Solution:\n{}", result),
 
-        process::exit(1);
+        Err(err) => {
+            eprintln!("Application error: {}", err);
+            process::exit(1);
+        }   
     }
 }
