@@ -1,4 +1,4 @@
-use std::convert::TryInto;
+use std::{convert::TryInto, sync::Arc};
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Entry {
@@ -11,7 +11,11 @@ type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and ever
 pub fn run(contents: &str) -> Result<String, String> {
     let mut parsed = parse_contents(contents)?;
     
-    Ok(solve(&mut parsed))
+    solve(&mut parsed)?;
+
+    unparse_contents(parsed);
+
+    todo!();
 }
 
 fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
@@ -38,15 +42,24 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
     Ok(array)
 }
 
-fn solve(sudoku: &mut [Line; 9]) -> String {
-    for line_nr in 0..9 {
-        for col_nr in 0..9 {
-            analyze(line_nr, col_nr, sudoku);
+fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
+    let mut iterations = 0;
+    while sudoku.iter()
+                .flatten()
+                .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) 
+            && iterations <= 20 {
+        
+        for line_nr in 0..9 {
+            for col_nr in 0..9 {
+                analyze(line_nr, col_nr, sudoku);
+            }
         }
+
+        update_sudoku(sudoku);
+
+        iterations += 1;
     }
 
-    update_sudoku(sudoku);
-    
     println!("{:?}", sudoku);
     todo!();
 }
@@ -140,6 +153,9 @@ fn update_sudoku(sudoku: &mut [Line; 9]) {
 
 }
 
+fn unparse_contents(sudoku: [Line; 9]) -> String {
+    todo!();
+}
 
 #[cfg(test)]
 mod tests {
