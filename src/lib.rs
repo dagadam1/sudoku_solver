@@ -82,50 +82,46 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
                 inner_array[num as usize - 1] = false;
             }
         }
-        
-    }
 
     //One cell is one of the 9 3x3 grids in the sudoku
     let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
 
     for i in 0..3 {
-        cells[0].extend_from_slice(&sudoku[i][0..3]);
-        cells[1].extend_from_slice(&sudoku[i][3..6]);
-        cells[2].extend_from_slice(&sudoku[i][6..9]);
+        cells[0].extend_from_slice(&sudoku_clone[i][0..3]);
+        cells[1].extend_from_slice(&sudoku_clone[i][3..6]);
+        cells[2].extend_from_slice(&sudoku_clone[i][6..9]);
     }
 
     for i in 3..6 {
-        cells[3].extend_from_slice(&sudoku[i][0..3]);
-        cells[4].extend_from_slice(&sudoku[i][3..6]);
-        cells[5].extend_from_slice(&sudoku[i][6..9]);
+        cells[3].extend_from_slice(&sudoku_clone[i][0..3]);
+        cells[4].extend_from_slice(&sudoku_clone[i][3..6]);
+        cells[5].extend_from_slice(&sudoku_clone[i][6..9]);
     }
     
     for i in 6..9 {
-        cells[6].extend_from_slice(&sudoku[i][0..3]);
-        cells[7].extend_from_slice(&sudoku[i][3..6]);
-        cells[8].extend_from_slice(&sudoku[i][6..9]);
+        cells[6].extend_from_slice(&sudoku_clone[i][0..3]);
+        cells[7].extend_from_slice(&sudoku_clone[i][3..6]);
+        cells[8].extend_from_slice(&sudoku_clone[i][6..9]);
     }
 
-    for cell_row in 0..3 {
-        for cell_col in 0..3 {
-            
-            for row in 0..3 {
-                for col in 0..3 {
+    let cell_row = line_nr / 3;
+    let cell_col = col_nr / 3;
+        
+//INTE ÄN
 
-                    if let Entry::Empty(ref mut inner_array) = sudoku[row + cell_row * 3][col + cell_col * 3] {
+    for row in 0..3 {
+            for col in 0..3 {
 
-                        cells[cell_row + 3 * cell_col].iter().for_each(|cell| {
-                            if let Entry::Num(num) = cell {
-                                inner_array[*num as usize - 1] = false;
-                            }
-                        });
+                if let Entry::Num(num) = sudoku_clone[row + cell_row * 3][col + cell_col * 3] {
+
+                    inner_array[num as usize - 1] = false;
 
                     }
-                    
-                }
-            }
 
-        }
+                }
+                    
+    }
+
     }
 }
  
