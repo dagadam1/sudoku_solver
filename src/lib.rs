@@ -223,7 +223,7 @@ __75__6_3";
     #[test]
     fn test_analyze() {
         use Entry::*;
-        let mut sudoku = [[Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9];
+        let mut sudoku = [[Empty([true; 9]); 9]; 9];
         sudoku[2][0] = Num(9); 
         sudoku[8][8] = Num(9);
         sudoku[8][6] = Num(8);
@@ -232,15 +232,15 @@ __75__6_3";
         sudoku[6][6] = Num(7);
         sudoku[6][7] = Num(1);
         sudoku[6][8] = Num(6);
-//__75__6_3
-//__75__6_3
-//9_75__6_3
-//__75__6_3
-//__75__6_3
-//__75__6_3
-//__75__716
-//__75__523
-//__75__8_9
+        //3   8 
+        //5  7     
+        //6 9      
+        // 3 1     
+        //7     5  
+        //      1 7
+        //       38
+        //4    6 9 
+        //    5    
         analyze(0, 0, &mut sudoku);
         analyze(8, 7, &mut sudoku);
 
