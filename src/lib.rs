@@ -11,7 +11,15 @@ type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and ever
 pub fn run(contents: &str) -> Result<String, String> {
     let mut parsed = parse_contents(contents)?;
     
-    solve(&mut parsed)?;
+    let mut fail_count = 0;
+
+    loop {
+        solve(&mut parsed).or_else(|_| {
+        
+        });
+    }
+
+
 
     Ok(unparse_sudoku(parsed))
 }
@@ -40,7 +48,7 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
     Ok(array)
 }
 
-fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
+fn solve(sudoku: &mut [Line; 9]) -> Result<(), ()> {
     let mut iterations = 0;
     while sudoku.iter()
                 .flatten()
@@ -55,7 +63,7 @@ fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
         update_sudoku(sudoku);
 
         if iterations >= 20 {
-            return Err(String::from("Could not find solution!"));
+            return Err(());
         }
 
         iterations += 1;
