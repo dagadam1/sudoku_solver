@@ -67,19 +67,22 @@ fn solve(sudoku: &mut Array2D<Entry>) -> Result<(), String> {
 
 fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut Array2D<Entry>) {
     let sudoku_clone = sudoku.clone();
-    
-    if let Entry::Empty(ref mut inner_array) = sudoku[line_nr][col_nr] {
+
+    let line = sudoku.as_rows()[line_nr];
+    let column = sudoku.as_columns()[col_nr];
+
+    if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
 
         //Check line
-        for i in 0..9 {
-            if let Entry::Num(num) = sudoku_clone[line_nr][i] {
+        for entry in line {
+            if let Entry::Num(num) = entry {
                 inner_array[num as usize - 1] = false;
             }
         }
 
         //Check column
-        for i in 0..9 {
-            if let Entry::Num(num) = sudoku_clone[i][col_nr] {
+        for entry in column {
+            if let Entry::Num(num) = entry {
                 inner_array[num as usize - 1] = false;
             }
         }
