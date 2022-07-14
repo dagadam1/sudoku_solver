@@ -1,4 +1,3 @@
-use std::convert::TryInto;
 use array2d::Array2D;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -45,8 +44,7 @@ fn parse_contents(contents: &str) -> Result<Array2D<Entry>, String> {
 fn solve(sudoku: &mut Array2D<Entry>) -> Result<(), String> {
     let mut iterations = 0;
     // Loop while sudoku contains empty entries i.e. is unsolved
-    while sudoku.iter()
-                .flatten()
+    while sudoku.elements_column_major_iter()
                 .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) {
         
         for line_nr in 0..9 {
@@ -67,7 +65,7 @@ fn solve(sudoku: &mut Array2D<Entry>) -> Result<(), String> {
     Ok(())
 }
 
-fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut [Line; 9]) {
+fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut Array2D<Entry>) {
     let sudoku_clone = sudoku.clone();
     
     if let Entry::Empty(ref mut inner_array) = sudoku[line_nr][col_nr] {
