@@ -1,4 +1,5 @@
 use std::convert::TryInto;
+use array2d::Array2D;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Entry {
@@ -16,31 +17,32 @@ pub fn run(contents: &str) -> Result<String, String> {
     Ok(unparse_sudoku(parsed))
 }
 
-fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
+fn parse_contents(contents: &str) -> Result<Array2D<Entry>, String> {
     const RADIX: u32 = 10;
 
-    let mut vec: Vec<Line> = vec![];
+    let mut vec: Vec<Vec<Entry>> = vec![];
 
     //Fill Vec<Line>
     for line in contents.lines() {
         if line.len() != 9 {
             return Err(format!("Expected a 9x9 sudoku but got a line length of '{}' instead!", line.len()));
         }
-        let mut line_array: Line = [Entry::Num(0); 9];
-        for (i, character) in line.chars().enumerate() {
-            line_array[i] = match character.to_digit(RADIX) {
+        let mut line_vec = vec![];
+        for character in line.chars() {
+            line_vec.push(
+                match character.to_digit(RADIX) {
                 Some(num) => Entry::Num(num),
                 None => Entry::Empty([true; 9]),
-            };
+            });
         };
-        vec.push(line_array);
+        vec.push(line_vec);
     };
-    
-    let array: [Line; 9] = vec.try_into().map_err(|_| "Expected 9 lines!")?;
+
+    let array = Array2D::from_rows(&vec);
     Ok(array)
 }
 
-fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
+fn solve(sudoku: &mut Array2D<Entry>) -> Result<(), String> {
     let mut iterations = 0;
     // Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.iter()
@@ -148,7 +150,7 @@ fn update_sudoku(sudoku: &mut [Line; 9]) {
 
 }
 
-fn unparse_sudoku(sudoku: [Line; 9]) -> String {
+fn unparse_sudoku(sudoku: Array2D<Entry>) -> String {
     let mut output = String::from("");
 
     for line in sudoku {
