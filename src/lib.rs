@@ -42,6 +42,7 @@ fn parse_contents(contents: &str) -> Result<[Line; 9], String> {
 
 fn solve(sudoku: &mut [Line; 9]) -> Result<(), String> {
     let mut iterations = 0;
+    // Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.iter()
                 .flatten()
                 .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) {
