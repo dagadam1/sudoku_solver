@@ -11,7 +11,7 @@ type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and ever
 pub fn run(contents: &str) -> Result<String, String> {
     let mut parsed = parse_contents(contents)?;
     
-    solve(&mut parsed)?;
+    parsed = solve(parsed)?;
 
     Ok(unparse_sudoku(parsed))
 }
@@ -41,7 +41,7 @@ fn parse_contents(contents: &str) -> Result<Array2D<Entry>, String> {
     Ok(array)
 }
 
-fn solve(sudoku: &mut Array2D<Entry>) -> Result<(), String> {
+fn solve(sudoku: Array2D<Entry>) -> Result<Array2D<Entry>, String> {
     let mut iterations = 0;
     // Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.elements_column_major_iter()
@@ -62,18 +62,16 @@ fn solve(sudoku: &mut Array2D<Entry>) -> Result<(), String> {
         iterations += 1;
     }
 
-    Ok(())
+    Ok(sudoku)
 }
 
-fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut Array2D<Entry>) {
+fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) {
     let sudoku_clone = sudoku.clone();
-
-    let line = sudoku.as_rows()[line_nr];
-    let column = sudoku.as_columns()[col_nr];
 
     if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
 
         //Check line
+        let line = sudoku.as_rows()[line_nr];
         for entry in line {
             if let Entry::Num(num) = entry {
                 inner_array[num as usize - 1] = false;
@@ -81,14 +79,28 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: &mut Array2D<Entry>) {
         }
 
         //Check column
+        let column = sudoku.as_columns()[col_nr];
         for entry in column {
             if let Entry::Num(num) = entry {
                 inner_array[num as usize - 1] = false;
             }
         }
 
-    //One cell is one of the 9 3x3 grids in the sudoku
-    let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
+        //One cell is one of the 9 3x3 grids in the sudoku
+        let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
+
+        sudoku = sudoku.columns_iter().map(|column| {
+            let column_vec: Vec<&Entry> = column.collect();
+            column_vec.chunks(3)
+        }).collect();
+
+        //Divide the sudoku into chunks of 3 columns
+        let chunks = sudoku.as_columns().chunks(3);
+
+        chunks.map(|chunk| {
+            chunk.iter().map()
+        })
+        
 
     for i in 0..3 {
         cells[0].extend_from_slice(&sudoku_clone[i][0..3]);
