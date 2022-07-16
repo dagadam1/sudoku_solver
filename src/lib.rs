@@ -227,7 +227,7 @@ __75__6_3";
 
     for i in 0..9 {
         expected_result_vec.append(
-        &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
+            &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
         )
     }
 
@@ -238,21 +238,29 @@ __75__6_3";
     let result = parse_contents(contents).unwrap();
 
     assert_eq!(result, expected_result);
-    
+
     }
 
     #[test]
     fn test_analyze() {
         use Entry::*;
-        let mut sudoku = [[Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9];
-        sudoku[2][0] = Num(9); 
-        sudoku[8][8] = Num(9);
-        sudoku[8][6] = Num(8);
-        sudoku[7][7] = Num(2);
-        sudoku[7][6] = Num(5);
-        sudoku[6][6] = Num(7);
-        sudoku[6][7] = Num(1);
-        sudoku[6][8] = Num(6);
+
+        let sudoku_vec = vec![];
+
+        for i in 0..9 {
+            sudoku_vec.append(
+                &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
+            )
+        }
+        let mut sudoku = Array2D::from_row_major(&sudoku_vec, 9, 9);
+        sudoku[(2, 0)] = Num(9); 
+        sudoku[(8, 8)] = Num(9);
+        sudoku[(8, 6)] = Num(8);
+        sudoku[(7, 7)] = Num(2);
+        sudoku[(7, 6)] = Num(5);
+        sudoku[(6, 6)] = Num(7);
+        sudoku[(6, 7)] = Num(1);
+        sudoku[(6, 8)] = Num(6);
 //__75__6_3
 //__75__6_3
 //9_75__6_3
@@ -262,11 +270,11 @@ __75__6_3";
 //__75__716
 //__75__523
 //__75__8_9
-        analyze(0, 0, &mut sudoku);
-        analyze(8, 7, &mut sudoku);
+        analyze(0, 0, sudoku);
+        analyze(8, 7, sudoku);
 
-        assert_eq!(sudoku[0][0], Empty([true, true, false, true, false, false, false, true, false]));
-        assert_eq!(sudoku[8][7], Empty([false, false, false, true, false, false, false, false, false]));
+        assert_eq!(sudoku[(0, 0)], Empty([true, true, false, true, false, false, false, true, false]));
+        assert_eq!(sudoku[(8, 7)], Empty([false, false, false, true, false, false, false, false, false]));
     }
     
     #[test]
