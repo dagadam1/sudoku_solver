@@ -1,6 +1,10 @@
 use array2d::Array2D;
 
-
+// macro_rules! repeated_slice {
+//     ([$($i:ident),*]; $n:literal) => {
+//         $([$i])
+//     };
+// }
 
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -219,13 +223,22 @@ __75__6_3
 __75__6_3
 __75__6_3";
 
-        let expected_result: Array2D<Entry> = Array2D::from_row_major([
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9
-        ], 9, 9);
+    let expected_result_vec = vec![];
 
-        let result = parse_contents(contents).unwrap();
+    for i in 0..9 {
+        expected_result_vec.append(
+        &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
+        )
+    }
 
-        assert_eq!(result, expected_result);
+    let expected_result: Array2D<Entry> = Array2D::from_row_major(&expected_result_vec, 9, 9);
+
+    println!("{:?}", expected_result);
+
+    let result = parse_contents(contents).unwrap();
+
+    assert_eq!(result, expected_result);
+    
     }
 
     #[test]
