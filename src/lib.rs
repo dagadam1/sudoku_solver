@@ -1,5 +1,8 @@
 use array2d::Array2D;
 
+
+
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Entry {
     Num(u32),
@@ -70,54 +73,43 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) {
 
     if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
 
-        //Check line
-        let line = sudoku.as_rows()[line_nr];
-        for entry in line {
-            if let Entry::Num(num) = entry {
-                inner_array[num as usize - 1] = false;
-            }
+    //Check line
+    let line = sudoku.as_rows()[line_nr];
+    for entry in line {
+        if let Entry::Num(num) = entry {
+            inner_array[num as usize - 1] = false;
         }
+    }
 
-        //Check column
-        let column = sudoku.as_columns()[col_nr];
-        for entry in column {
-            if let Entry::Num(num) = entry {
-                inner_array[num as usize - 1] = false;
-            }
+    //Check column
+    let column = sudoku.as_columns()[col_nr];
+    for entry in column {
+        if let Entry::Num(num) = entry {
+            inner_array[num as usize - 1] = false;
         }
+    }
 
-        //One cell is one of the 9 3x3 grids in the sudoku
-        let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
-
-        sudoku = sudoku.columns_iter().map(|column| {
-            let column_vec: Vec<&Entry> = column.collect();
-            column_vec.chunks(3)
-        }).collect();
-
-        //Divide the sudoku into chunks of 3 columns
-        let chunks = sudoku.as_columns().chunks(3);
-
-        chunks.map(|chunk| {
-            chunk.iter().map()
-        })
-        
+    //One cell is one of the 9 3x3 grids in the sudoku
+    //Left to right, up to down
+    let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
 
     for i in 0..3 {
-        cells[0].extend_from_slice(&sudoku_clone[i][0..3]);
-        cells[1].extend_from_slice(&sudoku_clone[i][3..6]);
-        cells[2].extend_from_slice(&sudoku_clone[i][6..9]);
+        let row = sudoku.row_iter(i);
+        cells[0].append(&mut row.take(3).cloned().collect());
+        cells[1].append(&mut row.take(3).cloned().collect());
+        cells[2].append(&mut row.take(3).cloned().collect());
     }
-
     for i in 3..6 {
-        cells[3].extend_from_slice(&sudoku_clone[i][0..3]);
-        cells[4].extend_from_slice(&sudoku_clone[i][3..6]);
-        cells[5].extend_from_slice(&sudoku_clone[i][6..9]);
+        let row = sudoku.row_iter(i);
+        cells[3].append(&mut row.take(3).cloned().collect());
+        cells[4].append(&mut row.take(3).cloned().collect());
+        cells[5].append(&mut row.take(3).cloned().collect());
     }
-    
     for i in 6..9 {
-        cells[6].extend_from_slice(&sudoku_clone[i][0..3]);
-        cells[7].extend_from_slice(&sudoku_clone[i][3..6]);
-        cells[8].extend_from_slice(&sudoku_clone[i][6..9]);
+        let row = sudoku.row_iter(i);
+        cells[6].append(&mut row.take(3).cloned().collect());
+        cells[7].append(&mut row.take(3).cloned().collect());
+        cells[8].append(&mut row.take(3).cloned().collect());
     }
 
     let cell_row = line_nr / 3;
@@ -126,7 +118,7 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) {
     for row in 0..3 {
             for col in 0..3 {
 
-                if let Entry::Num(num) = sudoku_clone[row + cell_row * 3][col + cell_col * 3] {
+                if let Entry::Num(num) = sudoku[(row + cell_row * 3, col + cell_col * 3)] {
 
                     inner_array[num as usize - 1] = false;
 
@@ -227,9 +219,9 @@ __75__6_3
 __75__6_3
 __75__6_3";
 
-        let expected_result = [
+        let expected_result: Array2D<Entry> = Array2D::from_row_major([
             [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]; 9
-        ];
+        ], 9, 9);
 
         let result = parse_contents(contents).unwrap();
 
