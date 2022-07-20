@@ -1,24 +1,10 @@
-// use ndarray::Array2;
-// use ndarray::ShapeBuilder;
 use ndarray::prelude::*;
-
-#[macro_use]
-extern crate ndarray;
-
-// macro_rules! repeated_slice {
-//     ([$($i:ident),*]; $n:literal) => {
-//         $([$i])
-//     };
-// }
-
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Entry {
     Num(u32),
     Empty([bool; 9]), //Which values are possible
 }
-
-//type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and every entry is a number in the sudoku
 
 pub fn run(contents: &str) -> Result<String, String> {
     let mut parsed = parse_contents(contents)?;
@@ -47,29 +33,13 @@ fn parse_contents(contents: &str) -> Result<Array2<Entry>, String> {
         });
     }
 
-    //Fill Vec<Line>
-    // for line in contents.lines() {
-    //     if line.len() != 9 {
-    //         return Err(format!("Expected a 9x9 sudoku but got a line length of '{}' instead!", line.len()));
-    //     }
-    //     let mut line_vec = vec![];
-    //     for character in line.chars() {
-    //         line_vec.push(
-    //             match character.to_digit(RADIX) {
-    //             Some(num) => Entry::Num(num),
-    //             None => Entry::Empty([true; 9]),
-    //         });
-    //     };
-    //     vec.push(line_vec);
-    // };
-
     let array = Array2::from_shape_vec((9, 9), vec).map_err(|err| err.to_string())?;
     Ok(array)
 }
 
 fn solve(mut sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
     let mut iterations = 0;
-    // Loop while sudoku contains empty entries i.e. is unsolved
+    //Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.iter()
                 .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) {
         
@@ -123,7 +93,7 @@ fn analyze(line_nr: usize, col_nr: usize, mut sudoku: Array2<Entry>) -> Array2<E
         let cell_col = col_nr / 3;
         
         //The cell that this number is in
-        let current_cell = cells.into_iter().nth(cell_row * 3 + cell_col).unwrap(); //Not sure about this
+        let current_cell = cells.into_iter().nth(cell_row * 3 + cell_col).unwrap();
 
         //For every number in current_cell, make the inner array of the Entry::Empty false
         //Because there can only be one of each number in every cell of the sudoku
@@ -219,32 +189,15 @@ __75__6_3
 __75__6_3
 __75__6_3";
 
-        let expected_result1 = array![
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
-            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],];
-
-        let mut vec = vec![];
+        let mut expected_result_vec = vec![];
 
         for _ in 0..9 {
-            vec.append(
+            expected_result_vec.append(
                 &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
             )
         }
 
-        let expected_result = Array2::from_shape_vec((9, 9), vec).unwrap();
-
-        println!("{:?}", expected_result);
-
-        assert_eq!(expected_result1, expected_result);
-
-    
+        let expected_result = Array2::from_shape_vec((9, 9), expected_result_vec).unwrap();
 
         let result = parse_contents(contents).unwrap();
 
