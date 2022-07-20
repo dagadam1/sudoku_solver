@@ -1,4 +1,9 @@
-use ndarray::Array2;
+// use ndarray::Array2;
+// use ndarray::ShapeBuilder;
+use ndarray::prelude::*;
+
+#[macro_use]
+extern crate ndarray;
 
 // macro_rules! repeated_slice {
 //     ([$($i:ident),*]; $n:literal) => {
@@ -26,25 +31,40 @@ pub fn run(contents: &str) -> Result<String, String> {
 fn parse_contents(contents: &str) -> Result<Array2<Entry>, String> {
     const RADIX: u32 = 10;
 
-    let mut vec: Vec<Vec<Entry>> = vec![];
+    let mut vec: Vec<Entry> = vec![];
 
-    //Fill Vec<Line>
     for line in contents.lines() {
         if line.len() != 9 {
             return Err(format!("Expected a 9x9 sudoku but got a line length of '{}' instead!", line.len()));
         }
-        let mut line_vec = vec![];
-        for character in line.chars() {
-            line_vec.push(
-                match character.to_digit(RADIX) {
+        let mut vec = vec![];
+        //Fill vec with the characters from the input
+        line.chars()
+            .for_each(|character| {
+            vec.push(match character.to_digit(RADIX) {
                 Some(num) => Entry::Num(num),
                 None => Entry::Empty([true; 9]),
-            });
-        };
-        vec.push(line_vec);
-    };
+            })
+        });
+    }
 
-    let array = Array2::from_rows(&vec);
+    //Fill Vec<Line>
+    // for line in contents.lines() {
+    //     if line.len() != 9 {
+    //         return Err(format!("Expected a 9x9 sudoku but got a line length of '{}' instead!", line.len()));
+    //     }
+    //     let mut line_vec = vec![];
+    //     for character in line.chars() {
+    //         line_vec.push(
+    //             match character.to_digit(RADIX) {
+    //             Some(num) => Entry::Num(num),
+    //             None => Entry::Empty([true; 9]),
+    //         });
+    //     };
+    //     vec.push(line_vec);
+    // };
+
+    let array = Array2::from_shape_vec((9, 9), vec).map_err(|err| err.to_string())?;
     Ok(array)
 }
 
