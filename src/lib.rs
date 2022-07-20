@@ -68,7 +68,7 @@ fn parse_contents(contents: &str) -> Result<Array2<Entry>, String> {
     Ok(array)
 }
 
-fn solve(sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
+fn solve(mut sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
     let mut iterations = 0;
     // Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.iter()
@@ -76,11 +76,11 @@ fn solve(sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
         
         for line_nr in 0..9 {
             for col_nr in 0..9 {
-                analyze(line_nr, col_nr, sudoku);
+                sudoku = analyze(line_nr, col_nr, sudoku);
             }
         }
 
-        update_sudoku(sudoku);
+        sudoku = update_sudoku(sudoku);
 
         if iterations >= 20 {
             return Err(String::from("Could not find solution!"));
@@ -92,14 +92,14 @@ fn solve(sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
     Ok(sudoku)
 }
 
-fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2<Entry>) -> Array2<Entry>{
-    //let sudoku_clone = sudoku.clone();
+fn analyze(line_nr: usize, col_nr: usize, mut sudoku: Array2<Entry>) -> Array2<Entry>{
+    let sudoku_clone = sudoku.clone();
 
     if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
 
         //Check line
         //There can only be one of each number in each line
-        let line = sudoku.row(line_nr);
+        let line = sudoku_clone.row(line_nr);
         for entry in line {
             if let Entry::Num(num) = entry {
                 inner_array[*num as usize - 1] = false;
@@ -108,7 +108,7 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2<Entry>) -> Array2<Entry
 
         //Check column
         //There can only be one of each number in each column
-        let column = sudoku.column(col_nr);
+        let column = sudoku_clone.column(col_nr);
         for entry in column {
             if let Entry::Num(num) = entry {
                 inner_array[*num as usize - 1] = false;
@@ -118,7 +118,7 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2<Entry>) -> Array2<Entry
 
 
         //One cell is one of the 9 3x3 parts of the sudoku
-        let cells = sudoku.exact_chunks((3, 3));
+        let cells = sudoku_clone.exact_chunks((3, 3));
 
         let cell_row = line_nr / 3;
         let cell_col = col_nr / 3;
@@ -139,8 +139,8 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2<Entry>) -> Array2<Entry
     sudoku
 }
  
-fn update_sudoku(sudoku: Array2<Entry>) {
-    for line in sudoku.as_rows() {
+fn update_sudoku(sudoku: Array2<Entry>) -> Array2<Entry> {
+    for line in sudoku.rows() {
         
         line
             .clone()
@@ -160,13 +160,14 @@ fn update_sudoku(sudoku: Array2<Entry>) {
             
         })
     }
+    sudoku
 
 }
 
 fn unparse_sudoku(sudoku: Array2<Entry>) -> String {
     let mut output = String::from("");
 
-    for line in sudoku.rows_iter() {
+    for line in sudoku.rows() {
         for entry in line {
             if let Entry::Num(num) = entry { //entry must be the variant Entry::Num(_)
                 output.push_str(&num.to_string())
