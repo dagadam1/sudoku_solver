@@ -110,6 +110,7 @@ fn analyze(line_nr: usize, col_nr: usize, mut sudoku: Array2<Entry>) -> Array2<E
         let column = sudoku_clone.column(col_nr);
         for entry in column {
             if let Entry::Num(num) = entry {
+                println!("{:?}", num);
                 inner_array[*num as usize - 1] = false;
             }
         }
@@ -146,7 +147,7 @@ fn update_sudoku(mut sudoku: Array2<Entry>) -> Array2<Entry> {
                 if array.iter().filter(|x| **x).count() == 1 {
                     //Check which index has the value of true and thus is the possible number
                     let num = array.iter().position(|x| *x).unwrap();
-                    *entry = Entry::Num(num as u32);
+                    *entry = Entry::Num(num as u32 + 1);
                 }
             }
         });
