@@ -13,7 +13,7 @@ enum Entry {
     Empty([bool; 9]), //Which values are possible
 }
 
-type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and every entry is a number in the sudoku
+//type Line = [Entry; 9]; // [Line] = [[Entry]] line is a horizontal line and every entry is a number in the sudoku
 
 pub fn run(contents: &str) -> Result<String, String> {
     let mut parsed = parse_contents(contents)?;
@@ -23,7 +23,7 @@ pub fn run(contents: &str) -> Result<String, String> {
     Ok(unparse_sudoku(parsed))
 }
 
-fn parse_contents(contents: &str) -> Result<Array2D<Entry>, String> {
+fn parse_contents(contents: &str) -> Result<Array2<Entry>, String> {
     const RADIX: u32 = 10;
 
     let mut vec: Vec<Vec<Entry>> = vec![];
@@ -44,11 +44,11 @@ fn parse_contents(contents: &str) -> Result<Array2D<Entry>, String> {
         vec.push(line_vec);
     };
 
-    let array = Array2D::from_rows(&vec);
+    let array = Array2::from_rows(&vec);
     Ok(array)
 }
 
-fn solve(sudoku: Array2D<Entry>) -> Result<Array2D<Entry>, String> {
+fn solve(sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
     let mut iterations = 0;
     // Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.elements_column_major_iter()
@@ -72,7 +72,7 @@ fn solve(sudoku: Array2D<Entry>) -> Result<Array2D<Entry>, String> {
     Ok(sudoku)
 }
 
-fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) -> Array2D<Entry>{
+fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2<Entry>) -> Array2<Entry>{
     let sudoku_clone = sudoku.clone();
 
     if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
@@ -137,7 +137,7 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) -> Array2D<Ent
     sudoku
 }
  
-fn update_sudoku(sudoku: Array2D<Entry>) {
+fn update_sudoku(sudoku: Array2<Entry>) {
     for line in sudoku.as_rows() {
         
         line
@@ -161,7 +161,7 @@ fn update_sudoku(sudoku: Array2D<Entry>) {
 
 }
 
-fn unparse_sudoku(sudoku: Array2D<Entry>) -> String {
+fn unparse_sudoku(sudoku: Array2<Entry>) -> String {
     let mut output = String::from("");
 
     for line in sudoku.rows_iter() {
@@ -233,7 +233,7 @@ __75__6_3";
         )
     }
 
-    let expected_result: Array2D<Entry> = Array2D::from_row_major(&expected_result_vec, 9, 9);
+    let expected_result: Array2<Entry> = Array2::from_row_major(&expected_result_vec, 9, 9);
 
     println!("{:?}", expected_result);
 
@@ -254,7 +254,7 @@ __75__6_3";
                 &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
             )
         }
-        let mut sudoku = Array2D::from_row_major(&sudoku_vec, 9, 9);
+        let mut sudoku = Array2::from_row_major(&sudoku_vec, 9, 9);
         sudoku[(2, 0)] = Num(9); 
         sudoku[(8, 8)] = Num(9);
         sudoku[(8, 6)] = Num(8);
