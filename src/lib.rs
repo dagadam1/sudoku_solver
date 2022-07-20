@@ -110,7 +110,6 @@ fn analyze(line_nr: usize, col_nr: usize, mut sudoku: Array2<Entry>) -> Array2<E
         let column = sudoku_clone.column(col_nr);
         for entry in column {
             if let Entry::Num(num) = entry {
-                println!("{:?}", num);
                 inner_array[*num as usize - 1] = false;
             }
         }
