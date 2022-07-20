@@ -41,7 +41,7 @@ fn solve(mut sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
     let mut iterations = 0;
     //Loop while sudoku contains empty entries i.e. is unsolved
     while sudoku.iter()
-                .any(|entry| if let Entry::Empty(_) = entry { true } else { false } ) {
+                .any(|entry| matches!(entry, Entry::Empty(_)) ) {
         
         for line_nr in 0..9 {
             for col_nr in 0..9 {
