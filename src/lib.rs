@@ -1,5 +1,3 @@
-use std::array;
-
 // use ndarray::Array2;
 // use ndarray::ShapeBuilder;
 use ndarray::prelude::*;
@@ -33,7 +31,7 @@ pub fn run(contents: &str) -> Result<String, String> {
 fn parse_contents(contents: &str) -> Result<Array2<Entry>, String> {
     const RADIX: u32 = 10;
 
-    let mut vec: Vec<Entry> = vec![];
+    let vec: Vec<Entry> = vec![];
 
     for line in contents.lines() {
         if line.len() != 9 {
