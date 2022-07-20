@@ -31,13 +31,12 @@ pub fn run(contents: &str) -> Result<String, String> {
 fn parse_contents(contents: &str) -> Result<Array2<Entry>, String> {
     const RADIX: u32 = 10;
 
-    let vec: Vec<Entry> = vec![];
+    let mut vec: Vec<Entry> = vec![];
 
     for line in contents.lines() {
         if line.len() != 9 {
             return Err(format!("Expected a 9x9 sudoku but got a line length of '{}' instead!", line.len()));
         }
-        let mut vec = vec![];
         //Fill vec with the characters from the input
         line.chars()
             .for_each(|character| {
