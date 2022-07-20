@@ -1,3 +1,5 @@
+use std::array;
+
 // use ndarray::Array2;
 // use ndarray::ShapeBuilder;
 use ndarray::prelude::*;
@@ -139,26 +141,18 @@ fn analyze(line_nr: usize, col_nr: usize, mut sudoku: Array2<Entry>) -> Array2<E
     sudoku
 }
  
-fn update_sudoku(sudoku: Array2<Entry>) -> Array2<Entry> {
-    for line in sudoku.rows() {
-        
-        line
-            .clone()
-            .iter()
-            .enumerate()
-            .for_each( |(line_pos, entry)| {
-
+fn update_sudoku(mut sudoku: Array2<Entry>) -> Array2<Entry> {
+    for mut line in sudoku.rows_mut() {
+        line.map_inplace(|entry| {
             if let Entry::Empty(array) = entry {
-
+                //Check if there is only one possible number that this entry can be
                 if array.iter().filter(|x| **x).count() == 1 {
-
+                    //Check which index has the value of true and thus is the possible number
                     let num = array.iter().position(|x| *x).unwrap();
-                    line[line_pos] = Entry::Num(num as u32 + 1);
-                    
+                    *entry = Entry::Num(num as u32);
                 }
             }
-            
-        })
+        });
     }
     sudoku
 
