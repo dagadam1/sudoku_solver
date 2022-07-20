@@ -1,6 +1,4 @@
-use std::borrow::BorrowMut;
-
-use array2d::Array2D;
+use ndarray::Array2;
 
 // macro_rules! repeated_slice {
 //     ([$($i:ident),*]; $n:literal) => {
