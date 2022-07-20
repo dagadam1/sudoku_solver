@@ -93,64 +93,46 @@ fn solve(sudoku: Array2<Entry>) -> Result<Array2<Entry>, String> {
 }
 
 fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2<Entry>) -> Array2<Entry>{
-    let sudoku_clone = sudoku.clone();
+    //let sudoku_clone = sudoku.clone();
 
     if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
 
-    //Check line
-    let line = sudoku.as_rows()[line_nr];
-    for entry in line {
-        if let Entry::Num(num) = entry {
-            inner_array[num as usize - 1] = false;
+        //Check line
+        //There can only be one of each number in each line
+        let line = sudoku.row(line_nr);
+        for entry in line {
+            if let Entry::Num(num) = entry {
+                inner_array[*num as usize - 1] = false;
+            }
         }
-    }
 
-    //Check column
-    let column = sudoku.as_columns()[col_nr];
-    for entry in column {
-        if let Entry::Num(num) = entry {
-            inner_array[num as usize - 1] = false;
+        //Check column
+        //There can only be one of each number in each column
+        let column = sudoku.column(col_nr);
+        for entry in column {
+            if let Entry::Num(num) = entry {
+                inner_array[*num as usize - 1] = false;
+            }
         }
-    }
 
-    //One cell is one of the 9 3x3 grids in the sudoku
-    //Left to right, up to down
-    let mut cells: Vec<Vec<Entry>> = vec![Vec::with_capacity(9); 9];
 
-    for i in 0..3 {
-        let row = sudoku.row_iter(i);
-        cells[0].append(&mut row.take(3).cloned().collect());
-        cells[1].append(&mut row.take(3).cloned().collect());
-        cells[2].append(&mut row.take(3).cloned().collect());
-    }
-    for i in 3..6 {
-        let row = sudoku.row_iter(i);
-        cells[3].append(&mut row.take(3).cloned().collect());
-        cells[4].append(&mut row.take(3).cloned().collect());
-        cells[5].append(&mut row.take(3).cloned().collect());
-    }
-    for i in 6..9 {
-        let row = sudoku.row_iter(i);
-        cells[6].append(&mut row.take(3).cloned().collect());
-        cells[7].append(&mut row.take(3).cloned().collect());
-        cells[8].append(&mut row.take(3).cloned().collect());
-    }
 
-    let cell_row = line_nr / 3;
-    let cell_col = col_nr / 3;
+        //One cell is one of the 9 3x3 parts of the sudoku
+        let cells = sudoku.exact_chunks((3, 3));
 
-    for row in 0..3 {
-            for col in 0..3 {
+        let cell_row = line_nr / 3;
+        let cell_col = col_nr / 3;
+        
+        //The cell that this number is in
+        let current_cell = cells.into_iter().nth(cell_row * 3 + cell_col).unwrap(); //Not sure about this
 
-                if let Entry::Num(num) = sudoku[(row + cell_row * 3, col + cell_col * 3)] {
-
-                    inner_array[num as usize - 1] = false;
-
-                    }
-
-                }
-                    
-    }
+        //For every number in current_cell, make the inner array of the Entry::Empty false
+        //Because there can only be one of each number in every cell of the sudoku
+        current_cell.iter().for_each(|entry| {
+            if let Entry::Num(num) = entry {
+                inner_array[*num as usize - 1] = false;
+            }
+        });
 
     }
 
