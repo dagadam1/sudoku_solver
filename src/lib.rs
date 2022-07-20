@@ -220,21 +220,36 @@ __75__6_3
 __75__6_3
 __75__6_3";
 
-    let expected_result_vec = vec![];
+        let expected_result1 = array![
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],
+            [Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)],];
 
-    for i in 0..9 {
-        expected_result_vec.append(
-            &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
-        )
-    }
+        let mut vec = vec![];
 
-    let expected_result: Array2<Entry> = Array2::from_row_major(&expected_result_vec, 9, 9);
+        for _ in 0..9 {
+            vec.append(
+                &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
+            )
+        }
 
-    println!("{:?}", expected_result);
+        let expected_result = Array2::from_shape_vec((9, 9), vec).unwrap();
 
-    let result = parse_contents(contents).unwrap();
+        println!("{:?}", expected_result);
 
-    assert_eq!(result, expected_result);
+        assert_eq!(expected_result1, expected_result);
+
+    
+
+        let result = parse_contents(contents).unwrap();
+
+        assert_eq!(result, expected_result);
 
     }
 
@@ -242,14 +257,14 @@ __75__6_3";
     fn test_analyze() {
         use Entry::*;
 
-        let sudoku_vec = vec![];
+        let mut sudoku_vec = vec![];
 
-        for i in 0..9 {
+        for _ in 0..9 {
             sudoku_vec.append(
                 &mut vec![Empty([true; 9]),Empty([true; 9]),Num(7),Num(5),Empty([true; 9]),Empty([true; 9]),Num(6),Empty([true; 9]),Num(3)]
             )
         }
-        let mut sudoku = Array2::from_row_major(&sudoku_vec, 9, 9);
+        let mut sudoku: Array2<Entry> = Array2::from_shape_vec((9, 9), sudoku_vec).unwrap();
         sudoku[(2, 0)] = Num(9); 
         sudoku[(8, 8)] = Num(9);
         sudoku[(8, 6)] = Num(8);
@@ -267,8 +282,8 @@ __75__6_3";
 //__75__716
 //__75__523
 //__75__8_9
-        analyze(0, 0, sudoku);
-        analyze(8, 7, sudoku);
+        sudoku = analyze(0, 0, sudoku);
+        sudoku = analyze(8, 7, sudoku);
 
         assert_eq!(sudoku[(0, 0)], Empty([true, true, false, true, false, false, false, true, false]));
         assert_eq!(sudoku[(8, 7)], Empty([false, false, false, true, false, false, false, false, false]));
