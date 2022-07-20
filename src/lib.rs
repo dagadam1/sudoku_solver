@@ -1,3 +1,5 @@
+use std::borrow::BorrowMut;
+
 use array2d::Array2D;
 
 // macro_rules! repeated_slice {
@@ -72,7 +74,7 @@ fn solve(sudoku: Array2D<Entry>) -> Result<Array2D<Entry>, String> {
     Ok(sudoku)
 }
 
-fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) {
+fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) -> Array2D<Entry>{
     let sudoku_clone = sudoku.clone();
 
     if let Entry::Empty(ref mut inner_array) = sudoku[(line_nr, col_nr)] {
@@ -133,10 +135,12 @@ fn analyze(line_nr: usize, col_nr: usize, sudoku: Array2D<Entry>) {
     }
 
     }
+
+    sudoku
 }
  
-fn update_sudoku(sudoku: &mut [Line; 9]) {
-    for line in sudoku {
+fn update_sudoku(sudoku: Array2D<Entry>) {
+    for line in sudoku.as_rows() {
         
         line
             .clone()
@@ -162,7 +166,7 @@ fn update_sudoku(sudoku: &mut [Line; 9]) {
 fn unparse_sudoku(sudoku: Array2D<Entry>) -> String {
     let mut output = String::from("");
 
-    for line in sudoku {
+    for line in sudoku.rows_iter() {
         for entry in line {
             if let Entry::Num(num) = entry { //entry must be the variant Entry::Num(_)
                 output.push_str(&num.to_string())
